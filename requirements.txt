@@ -1,0 +1,9 @@
+Django==5.1.2
+asgiref==3.8.1
+crispy-bootstrap5==2024.10
+django-crispy-forms==2.3
+psycopg2-binary==2.9.10
+python-dateutil==2.9.0
+pytz==2024.2
+six==1.17.0
+sqlparse==0.5.1
