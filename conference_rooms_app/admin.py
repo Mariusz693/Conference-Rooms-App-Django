@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 
-from .models import User
+from .models import User, UserUniqueToken, Room, Reservation, ReservationUniqueToken
 
 # Register your models here.
 
@@ -25,3 +25,27 @@ class UserAdmin(DjangoUserAdmin):
     search_fields = ('first_name', 'last_name', 'email')
     
     ordering = ('last_name', 'first_name')
+
+
+@admin.register(UserUniqueToken)
+class UserUniqueTokenAdmin(admin.ModelAdmin):
+
+    list_display = ('user', 'token')
+
+
+@admin.register(Room)
+class RoomAdmin(admin.ModelAdmin):
+    
+    list_display = ('name', 'capacity', 'is_projector')
+
+
+@admin.register(Reservation)
+class ReservationAdmin(admin.ModelAdmin):
+    
+    list_display = ('room', 'user', 'date', 'is_confirmed')
+
+
+@admin.register(ReservationUniqueToken)
+class ReservationUniqueTokenAdmin(admin.ModelAdmin):
+
+    list_display = ('reservation', 'token')

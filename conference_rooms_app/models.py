@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 
+from uuid import uuid4
+
 from .managers import CustomUserManager
 from .validators import validate_phone
 
@@ -47,3 +49,83 @@ class User(AbstractUser):
     def __str__(self):
         
         return f'{self.first_name} {self.last_name}'
+
+
+class UserUniqueToken(models.Model):
+
+    class Meta:
+        verbose_name = 'Token użytkownika'
+        verbose_name_plural = 'Tokeny użytkowników'
+        ordering = ('user',)
+        
+    user = models.OneToOneField('User', verbose_name='Użytkownik', on_delete=models.CASCADE)
+    token = models.UUIDField(
+        primary_key=True,
+        verbose_name='Token',
+        default=uuid4,
+        editable=False
+        )
+
+
+class Room(models.Model):
+
+    class Meta:
+        verbose_name = 'Sala konferencyjna'
+        verbose_name_plural = 'Sale konferencyjne'
+        ordering = ('name',)
+
+    name = models.CharField(
+        verbose_name='Nazwa',
+        max_length=64,
+        unique=True,
+        error_messages={'unique': 'Nazwa sali już zapisana w bazie'}
+        )
+    capacity = models.PositiveSmallIntegerField(verbose_name='Pojemność')
+    is_projector = models.BooleanField(verbose_name='Projector', default=False)
+
+    def __str__(self):
+        
+        return self.name
+
+
+class Reservation(models.Model):
+
+    class Meta:
+        verbose_name = 'Rezerwacja sali'
+        verbose_name_plural = 'Rezerwacje sal'
+        ordering = ('-date',)
+        unique_together = ('room', 'date')
+    
+    room = models.ForeignKey('Room', verbose_name='Sala',on_delete=models.CASCADE)
+    user = models.ForeignKey('User', verbose_name='Użytkownik',on_delete=models.CASCADE)
+    date = models.DateField(verbose_name='Data rezerwacji')
+    message = models.TextField(verbose_name='Uwagi', null=True)
+    is_confirmed = models.BooleanField(verbose_name='Potwierdzenie', default=False)
+
+    def __str__(self):
+        
+        return f'{self.room}, {self.user}, {self.date}'
+    
+    def unique_error_message(self, model_class, unique_check):
+
+        if unique_check == ('room', 'date'):
+            
+            return 'Sala już zarezerwowana w tym terminie'
+
+        return super().unique_error_message(model_class, unique_check)
+
+
+class ReservationUniqueToken(models.Model):
+
+    class Meta:
+        verbose_name = 'Token rezerwacji'
+        verbose_name_plural = 'Tokeny rezerwacji'
+        ordering = ('reservation',)
+        
+    reservation = models.OneToOneField('Reservation', verbose_name='Rezerwacja', on_delete=models.CASCADE)
+    token = models.UUIDField(
+        primary_key=True,
+        verbose_name='Token',
+        default=uuid4,
+        editable=False
+        )
