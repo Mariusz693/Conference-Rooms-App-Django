@@ -1,3 +1,14 @@
 from django.shortcuts import render
+from django.views.generic import View
 
 # Create your views here.
+
+
+class HomePageView(View):
+
+    def get(self, request):
+
+        return render(
+            request=request,
+            template_name='conference_rooms_app/home_page.html'
+        )

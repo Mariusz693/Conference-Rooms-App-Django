@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="x-ua-compatible">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'conference_rooms_app/style/style.css' %}">
+</head>
+<body>
+    <nav class="navbar bg-dark my-navbar">
+        <div class="col d-flex">
+            <a href="{% url 'home-page' %}" class="my-navbar-logo" title="Strona główna">
+                <img src="{% static 'conference_rooms_app/images/logo.jpg' %}" alt="Logo">
+            </a>
+            <a href="#" class="my-navbar-main" title="Lista sal konferencyjnych">Lista sal</a>
+            <a href="#" class="my-navbar-main" title="Dane kontaktowe, adres">Kontakt</a>
+        </div>
+        <div class="col d-flex justify-content-end">
+            {% if request.user.is_authenticated %}
+            <div class="dropdown show">
+                <a href="#" class="navbar-brand dropdown-toggle my-navbar-main" data-toggle="dropdown">
+                    {{ request.user }}
+                </a>
+                <div class="dropdown-menu my-dropdown-style">            
+                    {% if request.user.status == 2 %}
+                    <a href="#" class="dropdown-item">Użytkownicy</a>
+                    <div class="dropdown-divider"></div>
+                    {% endif %}
+                    <a href="#" class="dropdown-item">Rezerwacje</a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item">Profil</a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item">Wyloguj</a>
+                </div>
+            </div>
+            {% else %}
+            <a href="#" class="my-navbar-main">Zaloguj &raquo;</a>
+            {% endif %}
+        </div>
+    </nav>
+    
+<!-- //--------------------------- page content -------------------------// -->
+    {% block content %}{% endblock content %}
+<!-- //--------------------------- page content end ---------------------// -->
+    <footer class="fixed-bottom bg-dark text-white">
+        <div class="text-center p-3">© 2024 Copyright: Mariusz Kuleta</div>
+    </footer> 
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+</body>
+</html>
