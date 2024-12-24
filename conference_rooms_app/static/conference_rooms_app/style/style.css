@@ -59,3 +59,27 @@ div.my-row {
 p.my-text {
     text-align: justify;
 }
+
+div.my-input input:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+div.my-input input:-webkit-autofill,
+div.my-input input:-webkit-autofill:hover, 
+div.my-input input:-webkit-autofill:focus, 
+div.my-input input:-webkit-autofill:active { 
+    box-shadow: 0 0 0 30px white inset !important;
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+    background-color: white;
+}
+
+a.my-link-password {
+    font-size: 0.75rem;
+    margin-bottom: 15px;
+    color: red;
+}
+
+a.my-link-user-create {
+    margin-bottom: 15px;
+}

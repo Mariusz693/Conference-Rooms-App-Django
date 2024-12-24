@@ -1,0 +1,54 @@
+{% extends 'conference_rooms_app/base.html' %}
+{% block title %} Profil {% endblock %}
+{% block content %}
+<div class="my-container">
+    <div class="mt-4 ml-4 mr-4">
+        <div class="row my-row">
+            <div class="col-xl-10 col-lg-10 col-md-11 col-sm-12 col-12">
+                <div class="row my-row">
+                    <div class="col-4"><strong>Imię:</strong></div>
+                    <div class="col-8">{{ user.first_name }}</div>
+                </div>
+                <div class="row my-row">
+                    <div class="col-4"><strong>Nazwisko:</strong></div>
+                    <div class="col-8">{{ user.last_name }}</div>
+                </div>
+                <div class="row my-row">
+                    <div class="col-4"><strong>Email:</strong></div>
+                    <div class="col-8">{{ user.email }}</div>
+                </div>
+                <div class="row my-row">
+                    <div class="col-4"><strong>Numer telefonu:</strong></div>
+                    <div class="col-8">{{ user.phone_number }}</div>
+                </div>
+                <div class="row my-row">
+                    <div class="col-4"><strong>Data rejestracji:</strong></div>
+                    <div class="col-8">{{ user.date_joined|date:'j E Y, H:i' }}</div>
+                </div>
+                <div class="row my-row">
+                    <div class="col-4"><strong>Ostatnie logowanie:</strong></div>
+                    <div class="col-8">{{ user.last_login|date:'j E Y, H:i' }}</div>
+                </div>
+                <div class="row my-row">
+                    <div class="col-4"><strong>Status:</strong></div>
+                    <div class="col-8">{{ user.get_status_display }}</div>
+                </div>
+                <div class="row my-row">
+                    <div class="col-4"><strong>Opcje:</strong></div>
+                    <div class="col-8"><a href="{% url 'user-update' %}">Edytuj Profil &raquo;</a></div>
+                </div>
+                <div class="row my-row">
+                    <div class="col-4"></div>
+                    <div class="col-8"><a href="{% url 'user-password' %}">Edytuj Hasło &raquo;</a></div>
+                </div>
+                {% if request.user.status == 1 %}
+                <div class="row my-row">
+                    <div class="col-4"></div>
+                    <div class="col-8"><a href="{% url 'user-delete' %}" class="text-danger">Usuń Profil &raquo;</a></div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

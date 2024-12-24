@@ -1,0 +1,29 @@
+{% extends 'conference_rooms_app/base.html' %}
+{% block title %} Powiadomienie {% endblock %}
+{% block content %}
+<div class="my-container">
+    <div class="mt-4 ml-4 mr-4">
+        <div class="row my-row">
+            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-8 col-10">
+                {% if messages %}
+                <div class="row">
+                    <div class="col-12">
+                        {% for message in messages %}
+                        <p class="text-center"><strong>{{ message }}</strong></p>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                <div class="row">
+                    <div class="col-6 d-flex">
+                        <a href="#" class="btn btn-success">Kontakt</a>
+                    </div>
+                    <div class="col-6 d-flex justify-content-end">
+                        <a href="{% url 'home-page' %}" class="btn btn-success">Strona główna</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

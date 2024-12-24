@@ -31,13 +31,13 @@
                     {% endif %}
                     <a href="#" class="dropdown-item">Rezerwacje</a>
                     <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item">Profil</a>
+                    <a href="{% url 'user-detail' %}" class="dropdown-item">Profil</a>
                     <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item">Wyloguj</a>
+                    <a href="{% url 'user-logout' %}" class="dropdown-item">Wyloguj</a>
                 </div>
             </div>
             {% else %}
-            <a href="#" class="my-navbar-main">Zaloguj &raquo;</a>
+            <a href="{% url 'user-login' %}" class="my-navbar-main">Zaloguj &raquo;</a>
             {% endif %}
         </div>
     </nav>
