@@ -1,0 +1,38 @@
+{% extends 'conference_rooms_app/base.html' %}
+{% block title %} Sala Konferencyjna {% endblock %}
+{% block content %}
+<div class="my-container">
+    <div class="mt-4 ml-4 mr-4">
+        <div class="row my-row">
+            <div class="col-xl-10 col-lg-10 col-md-11 col-sm-12 col-12">
+                <div class="row my-row">
+                    <div class="col-4"><strong>Nazwa Sali:</strong></div>
+                    <div class="col-8">{{ room }}</div>
+                </div>
+                <div class="row my-row">
+                    <div class="col-4"><strong>Pojemność miejsc:</strong></div>
+                    <div class="col-8">{{ room.capacity }}</div>
+                </div>
+                <div class="row my-row">
+                    <div class="col-4"><strong>Projektor:</strong></div>
+                    {% if room.is_projector %}
+                    <div class="col-8 text-success"><strong>&#9745;</strong></div>
+                    {% else %}
+                    <div class="col-8 text-danger"><strong>&#9746;</strong></div>
+                    {% endif %}
+                </div>
+                {% if request.user.is_authenticated and request.user.status == 2 %}
+                <div class="row my-row">
+                    <div class="col-4"><strong>Opcje:</strong></div>
+                    <div class="col-8"><a href="{% url 'room-update' pk=room.pk %}">Edytuj &raquo;</a></div>
+                </div>
+                <div class="row my-row">
+                    <div class="col-4"></div>
+                    <div class="col-8"><a href="{% url 'room-delete' pk=room.pk %}" class="text-danger">Usuń &raquo;</a></div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

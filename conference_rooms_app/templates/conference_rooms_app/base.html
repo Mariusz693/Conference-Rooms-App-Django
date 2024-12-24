@@ -15,7 +15,7 @@
             <a href="{% url 'home-page' %}" class="my-navbar-logo" title="Strona główna">
                 <img src="{% static 'conference_rooms_app/images/logo.jpg' %}" alt="Logo">
             </a>
-            <a href="#" class="my-navbar-main" title="Lista sal konferencyjnych">Lista sal</a>
+            <a href="{% url 'room-list' %}" class="my-navbar-main" title="Lista sal konferencyjnych">Lista sal</a>
             <a href="#" class="my-navbar-main" title="Dane kontaktowe, adres">Kontakt</a>
         </div>
         <div class="col d-flex justify-content-end">

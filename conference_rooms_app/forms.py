@@ -113,3 +113,18 @@ class UserPasswordSetForm(forms.Form):
 
         if password_new != password_repeat:
             self.add_error('password_repeat', 'Hasła róźnią się między sobą')
+
+
+class RoomSearchForm(forms.Form):
+
+    capacity = forms.IntegerField(
+        label=False,
+        widget=forms.NumberInput(attrs={'class': 'my-input-search', 'title': 'Min. pojemność'}),
+        min_value=1,
+        required=False
+    )
+    is_projector = forms.BooleanField(
+        label='',
+        widget=forms.CheckboxInput(attrs={'class': 'my-checkbox-search', 'title': 'Projektor'}),
+        required=False
+    )

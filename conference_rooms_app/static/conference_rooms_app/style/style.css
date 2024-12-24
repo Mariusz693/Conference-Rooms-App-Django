@@ -83,3 +83,29 @@ a.my-link-password {
 a.my-link-user-create {
     margin-bottom: 15px;
 }
+
+input.my-input-search {
+    height: 36px;
+    width: 90px;
+    text-align: center;
+    margin-right: 15px;
+}
+
+input.my-input-search:focus {
+    background-color: inherit;
+    color: inherit;
+    box-shadow: none;
+    outline: none;
+}
+
+input.my-checkbox-search {
+    margin-top: 10px;
+}
+
+button.my-submit-search {
+    background-color: inherit;
+    border: none;
+    color: blue;
+    opacity: 65%;
+    height: 36px;
+}

@@ -1,13 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import View, FormView, DetailView, UpdateView, DeleteView
+from django.views.generic import View, FormView, DetailView, UpdateView, DeleteView, ListView, CreateView
 from django.urls import reverse_lazy
 from django.core.mail import send_mail
 from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
-from .forms import UserCreateForm, UserLoginForm, UserPasswordResetForm, UserPasswordSetForm, UserPasswordForm
-from .models import User, UserUniqueToken
+from .forms import UserCreateForm, UserLoginForm, UserPasswordResetForm, UserPasswordSetForm, UserPasswordForm, \
+    RoomSearchForm
+from .models import User, UserUniqueToken, Room
 from .validators import validate_token
 
 # Create your views here.
@@ -275,3 +276,67 @@ class UserPasswordSetView(FormView):
         messages.add_message(self.request, messages.INFO, message='Twoje hasło zostało zmienione')
 
         return super().form_valid(form, *args, **kwargs)
+
+
+class RoomListView(ListView):
+
+    model = Room
+    template_name = 'conference_rooms_app/room_list.html'
+    context_object_name = 'room_list'
+
+    def get_queryset(self):
+        
+        room_list = super().get_queryset()
+        self.form = RoomSearchForm(self.request.GET)
+
+        if self.form.is_valid():
+        
+            if 'capacity' in self.form.changed_data:
+                room_list = room_list.filter(capacity__gte=self.form.cleaned_data['capacity'])
+
+            if 'is_projector' in self.form.changed_data:
+                room_list = room_list.filter(is_projector=self.form.cleaned_data['is_projector'])
+
+        return room_list
+
+    def get_context_data(self, *args, **kwargs):
+        
+        context = super().get_context_data(*args, **kwargs)
+        context['form'] = self.form
+
+        return context
+
+
+class RoomCreateView(TestMixin2, CreateView):
+
+    model = Room
+    fields = ['name', 'capacity', 'is_projector']
+    template_name = 'conference_rooms_app/room_create.html'
+    success_url = reverse_lazy('room-list')
+
+
+class RoomDetailView(DetailView):
+
+    model = Room
+    template_name = 'conference_rooms_app/room_detail.html'
+    context_object_name = 'room'
+
+
+class RoomUpdateView(TestMixin2, UpdateView):
+
+    model = Room
+    fields = ['name', 'capacity', 'is_projector']
+    template_name = 'conference_rooms_app/room_update.html'
+    context_object_name = 'room'
+    
+    def get_success_url(self):
+    	
+        return reverse_lazy('room-detail', args=[self.get_object().pk,])
+
+
+class RoomDeleteView(TestMixin2, DeleteView):
+
+    model = Room
+    template_name = 'conference_rooms_app/room_delete.html'
+    success_url = reverse_lazy('room-list')
+    context_object_name = 'room'

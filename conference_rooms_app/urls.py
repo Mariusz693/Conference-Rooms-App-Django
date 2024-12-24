@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views import HomePageView, ConfirmationView, UserCreateView, UserActiveView, UserLoginView, \
     UserLogoutView, UserDetailView, UserUpdateView, UserPasswordView, UserDeleteView, UserPasswordResetView, \
-    UserPasswordSetView
+    UserPasswordSetView, RoomListView, RoomCreateView, RoomDetailView, RoomUpdateView, RoomDeleteView
 
 
 urlpatterns = [
@@ -18,4 +18,9 @@ urlpatterns = [
     path('user_delete/', UserDeleteView.as_view(), name='user-delete'),
     path('user_password_reset/', UserPasswordResetView.as_view(), name='user-password-reset'),
     path('user_password_set/', UserPasswordSetView.as_view(), name='user-password-set'),
+    path('room_list/', RoomListView.as_view(), name='room-list'),
+    path('room_create/', RoomCreateView.as_view(), name='room-create'),
+    path('room_detail/<int:pk>/', RoomDetailView.as_view(), name='room-detail'),
+    path('room_update/<int:pk>/', RoomUpdateView.as_view(), name='room-update'),
+    path('room_delete/<int:pk>/', RoomDeleteView.as_view(), name='room-delete'),
 ]

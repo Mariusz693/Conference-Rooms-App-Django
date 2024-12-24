@@ -1,0 +1,54 @@
+{% extends 'conference_rooms_app/base.html' %}
+{% block title %} Lista Sal {% endblock %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="my-container">
+    <div class="mt-4 ml-4 mr-4">
+        <div class="row my-row">
+            <div class="col-xl-10 col-lg-10 col-md-11 col-sm-12 col-12">
+                <form class="form-style" action="" method="GET">
+                    {% csrf_token %}
+                    <div class="row my-search-style">
+                        <div class="col-12 d-flex justify-content-end">
+                            {{ form.capacity|as_crispy_field }}
+                            {{ form.is_projector|as_crispy_field }}
+                            <button type="submit" class="my-submit-search">Filtruj &raquo;</button>
+                        </div>
+                    </div>
+                </form>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th class="col-6">Nazwa</th>
+                            <th class="col-3 text-center">Pojemność</th>
+                            <th class="col-3 text-center">Rzutnik</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for room in room_list %}
+                        <tr>
+                            <th class="col-6">
+                                <a href="{% url 'room-detail' pk=room.pk %}">{{ room.name }}</a>
+                            </th>
+                            <td class="col-3 text-center">{{ room.capacity }}</td>
+                            {% if room.is_projector %}
+                            <td class="col-3 text-center text-success"><strong>&#9745;</strong></td>
+                            {% else %}
+                            <td class="col-3 text-center text-danger"><strong>&#9746;</strong></td>
+                            {% endif %}    
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% if request.user.is_authenticated and request.user.status == 2 %}
+                <div class="row">
+                    <div class="col-12 d-flex justify-content-end">
+                        <a href="{% url 'room-create' %}">Dodaj salę &raquo;</a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
