@@ -27,9 +27,9 @@
                 <div class="dropdown-menu my-dropdown-style">            
                     {% if request.user.status == 2 %}
                     <a href="#" class="dropdown-item">Użytkownicy</a>
-                    <div class="dropdown-divider"></div>
+                    {% else %}
+                    <a href="{% url 'user-reservation-list' %}" class="dropdown-item">Rezerwacje</a>
                     {% endif %}
-                    <a href="#" class="dropdown-item">Rezerwacje</a>
                     <div class="dropdown-divider"></div>
                     <a href="{% url 'user-detail' %}" class="dropdown-item">Profil</a>
                     <div class="dropdown-divider"></div>

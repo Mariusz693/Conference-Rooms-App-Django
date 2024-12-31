@@ -6,10 +6,14 @@ from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
+from datetime import date
+from dateutil.relativedelta import relativedelta
+
 from .forms import UserCreateForm, UserLoginForm, UserPasswordResetForm, UserPasswordSetForm, UserPasswordForm, \
-    RoomSearchForm
-from .models import User, UserUniqueToken, Room
+    RoomSearchForm, ReservationCreateForm
+from .models import User, UserUniqueToken, Room, Reservation, ReservationUniqueToken
 from .validators import validate_token
+from .utils import my_HTMLCalendar
 
 # Create your views here.
 
@@ -321,6 +325,29 @@ class RoomDetailView(DetailView):
     template_name = 'conference_rooms_app/room_detail.html'
     context_object_name = 'room'
 
+    def get_context_data(self, *args, **kwargs):
+        
+        context = super().get_context_data(*args, **kwargs)
+        actuall_month = date.today().replace(day=1)
+
+        if self.request.GET.get('next'):
+            look_month = date.fromisoformat(self.request.GET.get('next'))
+            look_month = look_month.replace(day=1)
+        
+        else:
+            look_month = actuall_month
+        
+        max_month = actuall_month + relativedelta(months=5)
+        prev_month = look_month - relativedelta(months=1) if look_month > actuall_month else ''
+        next_month = look_month + relativedelta(months=1) if (look_month) < max_month else ''
+        my_calendar_html = my_HTMLCalendar(self.get_object(), look_month, self.request.user)
+        context['my_calendar'] = my_calendar_html
+        context['today'] = look_month
+        context['prev_month'] = prev_month
+        context['next_month'] = next_month
+
+        return context
+
 
 class RoomUpdateView(TestMixin2, UpdateView):
 
@@ -340,3 +367,160 @@ class RoomDeleteView(TestMixin2, DeleteView):
     template_name = 'conference_rooms_app/room_delete.html'
     success_url = reverse_lazy('room-list')
     context_object_name = 'room'
+
+
+class ReservationCreateView(TestMixin1, CreateView):
+
+    model = Reservation
+    form_class = ReservationCreateForm
+    template_name = 'conference_rooms_app/reservation_create.html'
+    success_url = reverse_lazy('confirmation')
+
+    def get_initial(self):
+
+        initial = super().get_initial()
+        initial['room'] = get_object_or_404(Room, pk=self.kwargs['room'])
+        initial['user'] = self.request.user
+        initial['date'] = date.fromisoformat(self.kwargs['date'])
+        
+        return initial
+    
+    def get_context_data(self, *args, **kwargs):
+
+        context = super().get_context_data(*args, **kwargs)
+        context['room'] = get_object_or_404(Room, pk=self.kwargs['room'])
+        context['date'] = date.fromisoformat(self.kwargs['date'])
+
+        return context
+
+    def form_valid(self, form, *args, **kwargs):
+
+        reservation = form.save(commit=True)
+        reservation_token = ReservationUniqueToken.objects.create(reservation=reservation)
+        send_mail(
+            subject='Potwierdzenie rezerwacji',
+            message=f'Link do potwierdzenia rezerwacji w dniu {reservation.date}: {self.request.get_host()}{reverse_lazy('reservation-confirm')}?token={reservation_token.token}',
+            from_email='service@conference_rooms.com',
+            recipient_list=[self.request.user.email,]
+        )
+        messages.add_message(self.request, messages.INFO, message='Sprawdź pocztę i kliknij link potwierdzający rezerwację sali')
+
+        return super().form_valid(form, *args, **kwargs)
+
+
+class ReservationConfirmView(UpdateView):
+
+    model = Reservation
+    fields = []
+    template_name = 'conference_rooms_app/reservation_confirm.html'
+    success_url = reverse_lazy('confirmation')
+    context_object_name = 'reservation'
+
+    def get(self, request, *args, **kwargs):
+
+        token = self.request.GET.get('token')
+        
+        if token and validate_token(token) and ReservationUniqueToken.objects.filter(token=token):
+            reservation_token = ReservationUniqueToken.objects.get(token=self.request.GET.get('token'))
+
+            if reservation_token.reservation.date < date.today():
+                messages.error(self.request, message='Termin rezerwacji już minął.')
+        
+                return redirect(reverse_lazy('confirmation'))
+            
+            return super().get(request, *args, **kwargs)
+        
+        else:
+            messages.error(self.request, message='Twój link jest błędny lub źle podany.')
+        
+            return redirect(reverse_lazy('confirmation'))
+        
+    def get_object(self, queryset=None):
+        
+        reservation_token = ReservationUniqueToken.objects.get(token=self.request.GET.get('token'))
+
+        return reservation_token.reservation
+ 
+    def form_valid(self, form, *args, **kwargs):
+        
+        self.object.is_confirmed = True
+        self.object.save()
+        self.object.reservationuniquetoken.delete()
+        messages.error(self.request, message=f'Twoja rezerwacja została potwierdzona.')
+        
+        return super().form_valid(form, *args, **kwargs)
+
+
+class UserReservationListView(TestMixin1, ListView):
+
+    model = Reservation
+    template_name = 'conference_rooms_app/user_reservation_list.html'
+    context_object_name = 'user_reservation_list'
+
+    def get_queryset(self):
+        
+        return super().get_queryset().filter(user=self.request.user)
+
+
+class UserReservationDetailView(TestMixin1, DetailView):
+
+    model = Reservation
+    template_name = 'conference_rooms_app/user_reservation_detail.html'
+    context_object_name = 'reservation'
+    
+    def get_context_data(self, *args, **kwargs):
+
+        context = super().get_context_data(*args, **kwargs)
+        context['today'] = date.today()
+        
+        return context
+
+
+class UserReservationDeleteView(TestMixin1, DeleteView):
+
+    model = Reservation
+    template_name = 'conference_rooms_app/user_reservation_delete.html'
+    success_url = reverse_lazy('user-reservation-list')
+    context_object_name = 'reservation'
+
+    def get(self, request, *args, **kwargs):
+        
+        if self.get_object().date <= date.today():
+            messages.error(self.request, message='Termin rezerwacji już minął.')
+        
+            return redirect(reverse_lazy('confirmation'))
+            
+        return super().get(request, *args, **kwargs)
+
+
+class UserReservationConfirmView(TestMixin1, UpdateView):
+
+    model = Reservation
+    fields = []
+    template_name = 'conference_rooms_app/user_reservation_confirm.html'
+    context_object_name = 'reservation'
+    
+    def get_success_url(self):
+    	
+        return reverse_lazy('user-reservation-detail', args=[self.get_object().pk,])
+
+    def get(self, request, *args, **kwargs):
+        
+        if self.get_object().date <= date.today():
+            messages.error(self.request, message='Termin rezerwacji już minął.')
+        
+            return redirect(reverse_lazy('confirmation'))
+            
+        return super().get(request, *args, **kwargs)
+
+    def form_valid(self, form, *args, **kwargs):
+        
+        reservation_token, created = ReservationUniqueToken.objects.get_or_create(reservation=self.get_object())
+        send_mail(
+            subject='Potwierdzenie rezerwacji',
+            message=f'Link do potwierdzenia rezerwacji w dniu {self.get_object().date}: {self.request.get_host()}{reverse_lazy('reservation-confirm')}?token={reservation_token.token}',
+            from_email='service@conference_rooms.com',
+            recipient_list=[self.request.user.email,]
+        )
+        
+        return super().form_valid(form, *args, **kwargs)

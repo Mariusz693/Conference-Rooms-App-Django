@@ -13,6 +13,11 @@ body {
 
 a {
     text-decoration: none;
+    color: black;
+}
+
+a:hover {
+    color: black;
 }
 
 nav.my-navbar {
@@ -105,7 +110,20 @@ input.my-checkbox-search {
 button.my-submit-search {
     background-color: inherit;
     border: none;
-    color: blue;
-    opacity: 65%;
     height: 36px;
+}
+
+table.my-calendar {
+    text-align: center;
+}
+
+table.my-calendar td {
+    font-size: 1.25rem;
+    border: none;
+}
+
+span.my-calendar-today, a.my-calendar-today {
+    border: black 2px solid;
+    border-radius: 5px;
+    padding: 2.5px;
 }

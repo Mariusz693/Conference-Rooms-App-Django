@@ -31,6 +31,22 @@
                     <div class="col-8"><a href="{% url 'room-delete' pk=room.pk %}" class="text-danger">Usuń &raquo;</a></div>
                 </div>
                 {% endif %}
+                <div class="row my-row">
+                    <div class="col-4 d-flex">
+                        {% if prev_month %}
+                        <a href="{% url 'room-detail' pk=room.pk %}?next={{prev_month|date:'Y-m-d'}}">&laquo; {{ prev_month|date:'F' }}</a>
+                        {% endif %}
+                    </div>
+                    <div class="col-4 d-flex justify-content-center">
+                        <strong>{{ today|date:'F' }}</strong>
+                    </div>
+                    <div class="col-4 d-flex justify-content-end">
+                        {% if next_month %}
+                        <a href="{% url 'room-detail' pk=room.pk %}?next={{next_month|date:'Y-m-d'}}">{{ next_month|date:'F' }} &raquo;</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {{ my_calendar|safe }}
             </div>
         </div>
     </div>

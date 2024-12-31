@@ -28,7 +28,7 @@
                         {% for room in room_list %}
                         <tr>
                             <th class="col-6">
-                                <a href="{% url 'room-detail' pk=room.pk %}">{{ room.name }}</a>
+                                <a href="{% url 'room-detail' pk=room.pk %}">{{ room.name }} &raquo;</a>
                             </th>
                             <td class="col-3 text-center">{{ room.capacity }}</td>
                             {% if room.is_projector %}

@@ -1,7 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from .models import User
+from .models import User, Reservation
 from .validators import validate_password
 
 
@@ -128,3 +128,22 @@ class RoomSearchForm(forms.Form):
         widget=forms.CheckboxInput(attrs={'class': 'my-checkbox-search', 'title': 'Projektor'}),
         required=False
     )
+
+
+class ReservationCreateForm(forms.ModelForm):
+
+    class Meta:
+        model = Reservation
+        fields = ['room', 'user', 'date', 'message']
+        widgets = {
+            'room': forms.HiddenInput(),
+            'user': forms.HiddenInput(),
+            'date': forms.HiddenInput(),
+            'message': forms.Textarea(attrs={'rows': '5'})
+        }
+    
+    def __init__(self, *args, **kwargs):
+
+        super().__init__(*args, **kwargs)
+
+        self.fields['message'].required = False

@@ -1,0 +1,43 @@
+{% extends 'conference_rooms_app/base.html' %}
+{% block title %} Dodaj rezerwację {% endblock %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="my-container">
+    <div class="mt-4 ml-4 mr-4">
+        <div class="row my-row">
+            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-8 col-10">
+                <div class="row">
+                    <div class="col-12">
+                        <p class="text-center"><strong>Dodaj rezerwację</strong></p>
+                    </div>
+                </div>
+                <form class="form-style" action="" method="POST">
+                    {% csrf_token %}
+                    <div class="row my-row">
+                        <div class="col-12">Sala: <strong>{{ room }}</strong></div>
+                    </div>
+                    <div class="row my-row">
+                        <div class="col-12">Data: <strong>{{ date }}</strong></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 my-input">
+                            {{ form.room|as_crispy_field }}
+                            {{ form.user|as_crispy_field }}
+                            {{ form.date|as_crispy_field }}
+                            {{ form.message|as_crispy_field }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 d-flex">
+                            <a href="{% url 'room-detail' pk=room.pk %}?next={{date|date:'Y-m-d'}}" class="btn btn-success">Anuluj</a>
+                        </div>
+                        <div class="col-6 d-flex justify-content-end">
+                            <button type="submit" class="btn btn-success">Zarezerwuj</button>
+                        </div>
+                    </div>
+                </form>    
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
