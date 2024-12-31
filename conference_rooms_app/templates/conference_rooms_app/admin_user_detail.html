@@ -1,0 +1,50 @@
+{% extends 'conference_rooms_app/base.html' %}
+{% block title %} Profil Użytkownika {% endblock %}
+{% block content %}
+<div class="my-container">
+    <div class="mt-4 ml-4 mr-4">
+        <div class="row my-row">
+            <div class="col-xl-10 col-lg-10 col-md-11 col-sm-12 col-12">
+                <div class="row my-row">
+                    <div class="col-4"><strong>Imię i Nazwisko:</strong></div>
+                    <div class="col-8">{{ user }}</div>
+                </div>
+                <div class="row my-row">
+                    <div class="col-4"><strong>Email:</strong></div>
+                    <div class="col-8">{{ user.email }}</div>
+                </div>
+                <div class="row my-row">
+                    <div class="col-4"><strong>Numer telefonu:</strong></div>
+                    <div class="col-8">{{ user.phone_number }}</div>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th class="col-6">Nazwa sali</th>
+                            <th class="col-2 text-center">Pojemność</th>
+                            <th class="col-2 text-center">Data</th>
+                            <th class="col-2 text-center">Potwierdzenie</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for reservation in user.reservation_set.all %}
+                        <tr>
+                            <th class="col-6">
+                                <a href="{% url 'admin-reservation-detail' pk=reservation.pk %}">{{ reservation.room }} &raquo;</a>
+                            </th>
+                            <td class="col-2 text-center">{{ reservation.room.capacity }}</td>
+                            <td class="col-2 text-center">{{ reservation.date|date:'d-m-Y' }}</td>
+                            {% if reservation.is_confirmed %}
+                            <td class="col-2 text-center text-success"><strong>&#9745;</strong></td>
+                            {% else %}
+                            <td class="col-2 text-center text-danger"><strong>&#9746;</strong></td>
+                            {% endif %}    
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

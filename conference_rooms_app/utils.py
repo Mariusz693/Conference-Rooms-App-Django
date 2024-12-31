@@ -18,27 +18,27 @@ def my_HTMLCalendar(room, look_month, user):
                     reservation = room.reservation_set.filter(date=day).first()
                     if reservation and reservation.is_confirmed and day == today:
                         cal_html += f'''<td>
-                        <a href="#" class="my-calendar-today"
+                        <a href="{reverse_lazy('admin-reservation-detail', args=[reservation.pk])}" class="my-calendar-today"
                         title="Termin Zarezerwowany"><strong>{day.day}</strong></a>
                         </td>'''
                     elif reservation and day == today:
                         cal_html += f'''<td>
-                        <a href="#" class="my-calendar-today text-danger"
+                        <a href="{reverse_lazy('admin-reservation-detail', args=[reservation.pk])}" class="my-calendar-today text-danger"
                         title="Termin Zarezerwowany"><strong>{day.day}</strong></a>
                         </td>'''
                     elif reservation and reservation.is_confirmed and day > today:
                         cal_html += f'''<td>
-                        <a href=""
+                        <a href="{reverse_lazy('admin-reservation-detail', args=[reservation.pk])}"
                         title="Termin Zarezerwowany"><strong>{day.day}</strong></a>
                         </td>'''
                     elif reservation and day > today:
                         cal_html += f'''<td>
-                        <a href="#" class="text-danger"
+                        <a href="{reverse_lazy('admin-reservation-detail', args=[reservation.pk])}" class="text-danger"
                         title="Termin Zarezerwowany"><strong>{day.day}</strong></a>
                         </td>'''
                     elif reservation and day < today:
                         cal_html += f'''<td>
-                        <a href="#" 
+                        <a href="{reverse_lazy('admin-reservation-detail', args=[reservation.pk])}" 
                         title="Termin Zarezerwowany"><strong>{day.day}</strong></a>
                         </td>'''
                     elif day == today:

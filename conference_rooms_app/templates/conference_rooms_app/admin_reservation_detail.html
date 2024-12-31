@@ -1,0 +1,62 @@
+{% extends 'conference_rooms_app/base.html' %}
+{% block title %} Szczegóły rezyrwacji {% endblock %}
+{% block content %}
+<div class="my-container">
+    <div class="mt-4 ml-4 mr-4">
+        <div class="row my-row">
+            <div class="col-xl-10 col-lg-10 col-md-11 col-sm-12 col-12">
+                <div class="row my-row">
+                    <div class="col-4"><strong>Użytkownik:</strong></div>
+                    <div class="col-8">
+                        <a href="{% url 'admin-user-detail' pk=reservation.user.pk %}">{{ reservation.user }} &raquo;</a>
+                    </div>
+                </div>
+                <div class="row my-row">
+                    <div class="col-4"><strong>Sala:</strong></div>
+                    <div class="col-8">
+                        <a href="{% url 'room-detail' pk=reservation.room.pk %}?next={{reservation.date|date:'Y-m-d'}}">
+                            {{ reservation.room }} &raquo;
+                        </a>
+                    </div>
+                </div>
+                <div class="row my-row">
+                    <div class="col-4"><strong>Pojemność:</strong></div>
+                    <div class="col-8">{{ reservation.room.capacity }}</div>
+                </div>
+                <div class="row my-row">
+                    <div class="col-4"><strong>Projektor:</strong></div>
+                    {% if reservation.room.is_projector %}
+                    <div class="col-8 text-success"><strong>&#9745;</strong></div>
+                    {% else %}
+                    <div class="col-8 text-danger"><strong>&#9746;</strong></div>
+                    {% endif %}
+                </div>
+                <div class="row my-row">
+                    <div class="col-4"><strong>Data rezerwacji:</strong></div>
+                    <div class="col-8">{{ reservation.date }}</div>
+                </div>
+                <div class="row my-row">
+                    <div class="col-4"><strong>Uwagi:</strong></div>
+                    <div class="col-8">{{ reservation.message }}</div>
+                </div>
+                <div class="row my-row">
+                    <div class="col-4"><strong>Potwierdzenie:</strong></div>
+                    {% if reservation.is_confirmed %}
+                    <div class="col-8 text-success"><strong>&#9745;</strong></div>
+                    {% else %}
+                    <div class="col-8 text-danger"><strong>&#9746;</strong></div>
+                    {% endif %}
+                </div>
+                {% if reservation.date > today and not reservation.is_confirmed %}
+                <div class="row my-row">
+                    <div class="col-4"><strong>Opcje:</strong></div>
+                    <div class="col-8">
+                        <a href="{% url 'admin-reservation-confirm' pk=reservation.pk %}">Link Potwierdzający &raquo;</a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

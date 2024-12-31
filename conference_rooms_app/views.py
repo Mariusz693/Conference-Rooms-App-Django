@@ -10,7 +10,7 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 
 from .forms import UserCreateForm, UserLoginForm, UserPasswordResetForm, UserPasswordSetForm, UserPasswordForm, \
-    RoomSearchForm, ReservationCreateForm
+    RoomSearchForm, ReservationCreateForm, UserSearchForm
 from .models import User, UserUniqueToken, Room, Reservation, ReservationUniqueToken
 from .validators import validate_token
 from .utils import my_HTMLCalendar
@@ -521,6 +521,86 @@ class UserReservationConfirmView(TestMixin1, UpdateView):
             message=f'Link do potwierdzenia rezerwacji w dniu {self.get_object().date}: {self.request.get_host()}{reverse_lazy('reservation-confirm')}?token={reservation_token.token}',
             from_email='service@conference_rooms.com',
             recipient_list=[self.request.user.email,]
+        )
+        
+        return super().form_valid(form, *args, **kwargs)
+
+
+class AdminUserListView(TestMixin2, ListView):
+
+    model = User
+    template_name = 'conference_rooms_app/admin_user_list.html'
+    context_object_name = 'user_list'
+
+    def get_queryset(self):
+        
+        user_list = super().get_queryset().filter(status=1)
+        self.form = UserSearchForm(self.request.GET)
+
+        if self.form.is_valid():
+        
+            if 'last_name' in self.form.changed_data:
+                user_list = user_list.filter(last_name__icontains=self.form.cleaned_data['last_name'])
+
+        return user_list
+
+    def get_context_data(self, *args, **kwargs):
+        
+        context = super().get_context_data(*args, **kwargs)
+        context['form'] = self.form
+
+        return context
+
+
+class AdminUserDetailView(TestMixin2, DetailView):
+
+    model = User
+    template_name = 'conference_rooms_app/admin_user_detail.html'
+    context_object_name = 'user'
+
+
+class AdminReservationDetailView(TestMixin2, DetailView):
+
+    model = Reservation
+    template_name = 'conference_rooms_app/admin_reservation_detail.html'
+    context_object_name = 'reservation'
+    
+    def get_context_data(self, *args, **kwargs):
+
+        context = super().get_context_data(*args, **kwargs)
+        context['today'] = date.today()
+        
+        return context
+
+
+class AdminReservationConfirmView(TestMixin2, UpdateView):
+
+    model = Reservation
+    fields = []
+    template_name = 'conference_rooms_app/admin_reservation_confirm.html'
+    context_object_name = 'reservation'
+    
+    def get_success_url(self):
+    	
+        return reverse_lazy('admin-reservation-detail', args=[self.get_object().pk,])
+
+    def get(self, request, *args, **kwargs):
+        
+        if self.get_object().date <= date.today():
+            messages.error(self.request, message='Termin rezerwacji już minął.')
+        
+            return redirect(reverse_lazy('confirmation'))
+            
+        return super().get(request, *args, **kwargs)
+
+    def form_valid(self, form, *args, **kwargs):
+        
+        reservation_token, created = ReservationUniqueToken.objects.get_or_create(reservation=self.get_object())
+        send_mail(
+            subject='Potwierdzenie rezerwacji',
+            message=f'Link do potwierdzenia rezerwacji w dniu {self.get_object().date}: {self.request.get_host()}{reverse_lazy('reservation-confirm')}?token={reservation_token.token}',
+            from_email='service@conference_rooms.com',
+            recipient_list=[self.get_object().user.email,]
         )
         
         return super().form_valid(form, *args, **kwargs)

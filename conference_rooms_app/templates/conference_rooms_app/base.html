@@ -26,7 +26,7 @@
                 </a>
                 <div class="dropdown-menu my-dropdown-style">            
                     {% if request.user.status == 2 %}
-                    <a href="#" class="dropdown-item">Użytkownicy</a>
+                    <a href="{% url 'admin-user-list' %}" class="dropdown-item">Użytkownicy</a>
                     {% else %}
                     <a href="{% url 'user-reservation-list' %}" class="dropdown-item">Rezerwacje</a>
                     {% endif %}

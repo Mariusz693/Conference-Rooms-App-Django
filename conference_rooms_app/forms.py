@@ -147,3 +147,12 @@ class ReservationCreateForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         self.fields['message'].required = False
+
+
+class UserSearchForm(forms.Form):
+
+    last_name = forms.CharField(
+        label=False,
+        widget=forms.TextInput(attrs={'class': 'my-input-search', 'title': 'Nazwisko'}),
+        required=False
+    )

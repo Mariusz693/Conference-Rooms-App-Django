@@ -4,7 +4,8 @@ from .views import HomePageView, ConfirmationView, UserCreateView, UserActiveVie
     UserLogoutView, UserDetailView, UserUpdateView, UserPasswordView, UserDeleteView, UserPasswordResetView, \
     UserPasswordSetView, RoomListView, RoomCreateView, RoomDetailView, RoomUpdateView, RoomDeleteView, \
     ReservationCreateView, ReservationConfirmView, UserReservationListView, UserReservationDetailView, \
-    UserReservationDeleteView, UserReservationConfirmView
+    UserReservationDeleteView, UserReservationConfirmView, AdminUserListView, AdminUserDetailView, \
+    AdminReservationDetailView, AdminReservationConfirmView
 
 
 urlpatterns = [
@@ -31,4 +32,8 @@ urlpatterns = [
     path('room_delete/<int:pk>/', RoomDeleteView.as_view(), name='room-delete'),
     path('reservation_create/<int:room>/<str:date>/', ReservationCreateView.as_view(), name='reservation-create'),
     path('reservation_confirm/', ReservationConfirmView.as_view(), name='reservation-confirm'),
+    path('admin_user_list/', AdminUserListView.as_view(), name='admin-user-list'),
+    path('admin_user_detail/<int:pk>/', AdminUserDetailView.as_view(), name='admin-user-detail'),
+    path('admin_reservation_detail/<int:pk>/', AdminReservationDetailView.as_view(), name='admin-reservation-detail'),
+    path('admin_reservation_confirm/<int:pk>/', AdminReservationConfirmView.as_view(), name='admin-reservation-confirm'),
 ]
