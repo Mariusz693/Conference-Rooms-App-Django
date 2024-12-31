@@ -156,3 +156,12 @@ class UserSearchForm(forms.Form):
         widget=forms.TextInput(attrs={'class': 'my-input-search', 'title': 'Nazwisko'}),
         required=False
     )
+
+
+class ContactPageForm(forms.Form):
+
+    email = forms.CharField(label='Email', max_length=255, widget=forms.EmailInput())
+    first_name = forms.CharField(label='Imię', max_length=64)
+    last_name = forms.CharField(label='Nazwisko', max_length=64)
+    subject = forms.CharField(label='Temat', max_length=64)
+    message = forms.CharField(label='Wiadomość', widget=forms.Textarea(attrs={'rows': '6'}))

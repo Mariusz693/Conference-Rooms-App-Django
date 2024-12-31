@@ -10,7 +10,7 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 
 from .forms import UserCreateForm, UserLoginForm, UserPasswordResetForm, UserPasswordSetForm, UserPasswordForm, \
-    RoomSearchForm, ReservationCreateForm, UserSearchForm
+    RoomSearchForm, ReservationCreateForm, UserSearchForm, ContactPageForm
 from .models import User, UserUniqueToken, Room, Reservation, ReservationUniqueToken
 from .validators import validate_token
 from .utils import my_HTMLCalendar
@@ -603,4 +603,28 @@ class AdminReservationConfirmView(TestMixin2, UpdateView):
             recipient_list=[self.get_object().user.email,]
         )
         
+        return super().form_valid(form, *args, **kwargs)
+
+
+class ContactPageView(FormView):
+
+    form_class = ContactPageForm
+    template_name = 'conference_rooms_app/contact_page.html'
+    success_url = reverse_lazy('confirmation')
+
+    def form_valid(self, form, *args, **kwargs):
+
+        email = form.cleaned_data['email']
+        first_name = form.cleaned_data['first_name']
+        last_name = form.cleaned_data['last_name']
+        subject = form.cleaned_data['subject']
+        message = form.cleaned_data['message']
+        send_mail(
+            subject=subject,
+            message=f'{first_name} {last_name}\n{message}',
+            from_email=email,
+            recipient_list=['service@conference_rooms.com',]
+        )
+        messages.add_message(self.request, messages.INFO, message='Twoja wiadomość została wysłana')
+
         return super().form_valid(form, *args, **kwargs)
